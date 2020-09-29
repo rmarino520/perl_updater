@@ -1,0 +1,14 @@
+     NAME            | POSITION |   TEAM      |                        PREVIOUS TEAM                                  | POS RANK 
+Jackson, Lamar       |    QB    |  Ravens     |                                                                       |  1
+Mahomes, Patrick     |    QB    |  Chiefs     |                                                                       |  2
+McCaffrey, Christian |    RB    |  Panthers   |                                                                       |  1 
+Rivers, Phil         |    QB    |  Colts      |                          Chargers                                     |  7
+McCown. Josh         |    QB    |  Eagles     |  Cardinals, Lions, Raiders, Panthers, Bears, Buccaneers, Browns, Jets |  40 
+Kittle, Georgs       |    TE    |  49ers      |                                                                       |  3
+Kelce, Travis        |    TE    |  chiefs     |                                                                       |  1
+Brady, Tom           |    QB    |  Buccaneers |                         Patriots                                      |  5
+Doyle, Jack          |    TE    |  Colts      |                                                                       |  7  
+Manning, Eli         |    QB    |             |                          Giants                                       |       
+Barkley, Saquan      |    RB    |  Giants     |                                                                       |  2
+
+
