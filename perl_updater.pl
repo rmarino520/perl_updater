@@ -3,30 +3,36 @@
 use strict;
 use warnings;
 use DBI;
-my $dbh = DBI->connect("",'','');
-if(!$dbh){
- die "failed to connect to MySQL database DBI->errstr()";
-}
-exit;
 
-package Struct;sub new
+
+# my $dbh = DBI->connect("DBI:mysql:perl_updater",'root','XXXXXX');
+# if(!$dbh)
+   # {die "failed to connect to database DBI->errstr()";}
+
+package Struct;
+sub new
 {
    my $class = shift;
    my $ref = {}; 
    
    bless $ref, $class;
-   return $ref;}
-my $struct = new Struct();
+   return $ref;
+}
+
+my $struct = new Struct();
 $struct->{FULL_PATH} = 'C:\Users\Admin\Desktop\make_struct.txt';
 if(!$struct->FindFile())
 {
    print "ERROR: Cannot find $struct->{FULL_PATH}\n";
-   exit;}
+   exit;
+}
 $struct->ReadAndUpdate();
-
-use Data::Dumper;
-print Dumper($struct);
-####################################
+
+
+#use Data::Dumper;
+#print Dumper($struct);
+
+####################################
 ## Find File, Return 1 on success
 ####################################
 sub FindFile
@@ -40,8 +46,10 @@ sub FindFile
    my @files = readdir $dir;
 
    return 1 if(grep(/$file/, @files));
-}   
-####################################
+}   
+
+
+####################################
 ## Read file and update DB
 ####################################
 sub ReadAndUpdate
@@ -51,7 +59,8 @@ sub ReadAndUpdate
    my @file_array = <FH>;
    close(FH);
    chomp(@file_array);
-      foreach my $line (@file_array)
+   
+   foreach my $line (@file_array)
    {
       my $col = 0;
       ## TITLE LINE DOES NOT CONTAIN ','
@@ -63,26 +72,60 @@ sub ReadAndUpdate
             $col++;
             $title =~ s/^\s+|\s+$//g;
             $title =~ s/\s+/_/g;
-            $struct->{FILE_CONTENT}{$col} = $title;         } 
+            $struct->{FILE_CONTENT}{$col} = $title;
+         } 
       }
       else
       { 
          $col = 0;
+         my $full_name;
+         my $player_struct = undef;
          my @title_arr = split(/\|/, $line);
          foreach my $line_data(@title_arr)
          {
             $col++;
             $line_data =~ s/^\s+|\s+$//g;
             my $col_name = $struct->{FILE_CONTENT}{$col};
-            print "$line_data, $col_name\n";
-            # if($col_name =~ /NAME/i)
-            # elsif($col_name =~ /POSITION/i)
-            # elsif($col_name =~ /TEAM/i)
-            # elsif($col_name =~ /PREVIOUS_TEAM/i)
-            # elsif($col_name =~ /POS_RANK/i)
+            my $query;
             
-         }      }   }}
-
-
-
-
+            if($col_name =~ /NAME/i)
+            {
+               my @name_arr = split(',', $line_data);
+               my $full_name = $name_arr[1].' '.$name_arr[0];
+               $full_name =~ s/^\s+//g;
+               $player_struct->{NAME} = $full_name;
+               #query = "insert into team_info (first_name, last_name) values $";
+            }
+            elsif($col_name =~ /POSITION/i)
+            {
+               $player_struct->{POS} = $line_data;               
+            }
+            elsif($col_name =~ /^TEAM/i)
+            { 
+               $player_struct->{CURR_TEAM} = $line_data; 
+            }
+            elsif($col_name =~ /PREVIOUS_TEAM/i)
+            {
+               if($line_data =~ /,/i)
+               {
+                  my @team_arr = split(',', $line_data);
+                  foreach my $team(@team_arr)
+                  {
+                     push(@{$player_struct->{PREV_TEAM}}, $team);
+                  }
+               }
+               else
+               {
+                  $player_struct->{PREV_TEAM} = $line_data;
+               }
+            }
+            elsif($col_name =~ /POS_RANK/i)
+            {
+               $player_struct->{POS_RANK} = $line_data;   
+            }
+         }
+         use Data::Dumper;
+         print Dumper($player_struct);
+      }
+   }
+}
